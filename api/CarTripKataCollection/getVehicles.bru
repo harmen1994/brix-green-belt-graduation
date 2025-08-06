@@ -1,0 +1,46 @@
+meta {
+  name: getVehicles
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://127.0.0.1:4010/vehicles
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("should return 200", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("should return 2 vehicles: 1 petrol, 1 EV", () => {
+    expect(res.getBody()).to.eql([
+      {
+        id: 1,
+        brand: "Toyota",
+        model: "Camry",
+        engineType: "gasoline",
+        totalMileage: 15000.5,
+        fuelConsumption: 7.5,
+        tankCapacity: 60,
+        currentFuelLevel: 45
+      },
+      {
+        id: 2,
+        brand: "Tesla",
+        model: "Model 3",
+        engineType: "electric",
+        totalMileage: 8500,
+        energyConsumption: 18.5,
+        batteryCapacity: 75,
+        currentCharge: 0
+      }
+    ]);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

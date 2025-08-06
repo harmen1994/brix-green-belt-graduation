@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { server } from '../src/index';
+import { server } from '../src';
 
 describe('GET /health', () => {
   afterAll(() => {

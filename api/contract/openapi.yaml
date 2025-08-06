@@ -1,0 +1,1400 @@
+openapi: 3.1.0
+info:
+  title: Car Trip Kata API
+  description: |-
+    API for managing gasoline and electric vehicles in the Car Trip Kata orange belt graduation.
+    This API allows you to manage a fleet of vehicles with different engine types and track their usage.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://carTripKata.swagger.io/api/v1
+  description: Production server
+tags:
+- name: vehicles
+  description: Operations for managing vehicles
+- name: gasoline
+  description: Operations specific to gasoline vehicles
+- name: electric
+  description: Operations specific to electric vehicles
+paths:
+  /vehicles:
+    get:
+      tags:
+      - vehicles
+      summary: Get all vehicles
+      description: Retrieve a list of all vehicles in the system
+      operationId: getAllVehicles
+      parameters:
+      - name: engineType
+        in: query
+        description: Filter vehicles by engine type
+        required: false
+        schema:
+          type: string
+          enum:
+          - gasoline
+          - electric
+      - name: brand
+        in: query
+        description: Filter vehicles by brand
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  discriminator:
+                    propertyName: engineType
+                    mapping:
+                      gasoline: "#/components/schemas/GasolineVehicle"
+                      electric: "#/components/schemas/ElectricVehicle"
+                  required:
+                  - id
+                  - brand
+                  - model
+                  - engineType
+                  - totalMileage
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Unique identifier for the vehicle
+                      examples:
+                      - 1
+                    brand:
+                      type: string
+                      description: Vehicle manufacturer
+                      examples:
+                      - Toyota
+                    model:
+                      type: string
+                      description: Vehicle model
+                      examples:
+                      - Camry
+                    engineType:
+                      type: string
+                      enum:
+                      - gasoline
+                      - electric
+                      description: Type of engine
+                    totalMileage:
+                      type: number
+                      format: double
+                      minimum: 0
+                      description: Total distance traveled in kilometers
+                      examples:
+                      - 15000.5
+              examples:
+                vehicle_list:
+                  summary: List of vehicles
+                  value:
+                  - id: 1
+                    brand: Toyota
+                    model: Camry
+                    engineType: gasoline
+                    totalMileage: 15000.5
+                    fuelConsumption: 7.5
+                    tankCapacity: 60
+                    currentFuelLevel: 45
+                  - id: 2
+                    brand: Tesla
+                    model: Model 3
+                    engineType: electric
+                    totalMileage: 8500
+                    energyConsumption: 18.5
+                    batteryCapacity: 75
+                    currentCharge: 0
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+    post:
+      tags:
+      - vehicles
+      summary: Add a new vehicle
+      description: Add a new gasoline or electric vehicle to the system
+      operationId: addVehicle
+      requestBody:
+        description: Vehicle object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              discriminator:
+                propertyName: engineType
+                mapping:
+                  gasoline: "#/components/schemas/GasolineVehicleInput"
+                  electric: "#/components/schemas/ElectricVehicleInput"
+              required:
+              - brand
+              - model
+              - engineType
+              properties:
+                brand:
+                  type: string
+                  description: Vehicle manufacturer
+                  examples:
+                  - Toyota
+                model:
+                  type: string
+                  description: Vehicle model
+                  examples:
+                  - Camry
+                engineType:
+                  type: string
+                  enum:
+                  - gasoline
+                  - electric
+                  description: Type of engine
+                totalMileage:
+                  type: number
+                  format: double
+                  minimum: 0
+                  description: Initial total distance traveled in kilometers
+                  examples:
+                  - 0
+                  default: 0
+            examples:
+              gasoline_vehicle:
+                summary: Gasoline Vehicle Example
+                description: Example of creating a Toyota Camry gasoline vehicle
+                value:
+                  brand: Toyota
+                  model: Camry
+                  engineType: gasoline
+                  fuelConsumption: 7.5
+                  tankCapacity: 60
+                  currentFuelLevel: 45
+                  totalMileage: 15000.5
+              electric_vehicle:
+                summary: Electric Vehicle Example
+                description: Example of creating a Tesla Model 3 electric vehicle
+                value:
+                  brand: Tesla
+                  model: Model 3
+                  engineType: electric
+                  energyConsumption: 18.5
+                  batteryCapacity: 75
+                  currentCharge: 0
+                  totalMileage: 8500
+      responses:
+        "201":
+          description: Vehicle created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                discriminator:
+                  propertyName: engineType
+                  mapping:
+                    gasoline: "#/components/schemas/GasolineVehicle"
+                    electric: "#/components/schemas/ElectricVehicle"
+                required:
+                - id
+                - brand
+                - model
+                - engineType
+                - totalMileage
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Unique identifier for the vehicle
+                    examples:
+                    - 1
+                  brand:
+                    type: string
+                    description: Vehicle manufacturer
+                    examples:
+                    - Toyota
+                  model:
+                    type: string
+                    description: Vehicle model
+                    examples:
+                    - Camry
+                  engineType:
+                    type: string
+                    enum:
+                    - gasoline
+                    - electric
+                    description: Type of engine
+                  totalMileage:
+                    type: number
+                    format: double
+                    minimum: 0
+                    description: Total distance traveled in kilometers
+                    examples:
+                    - 15000.5
+              examples:
+                gasoline_vehicle:
+                  summary: Created Gasoline Vehicle
+                  value:
+                    id: 1
+                    brand: Toyota
+                    model: Camry
+                    engineType: gasoline
+                    totalMileage: 15000.5
+                    fuelConsumption: 7.5
+                    tankCapacity: 60
+                    currentFuelLevel: 45
+                electric_vehicle:
+                  summary: Created Electric Vehicle
+                  value:
+                    id: 2
+                    brand: Tesla
+                    model: Model 3
+                    engineType: electric
+                    totalMileage: 8500
+                    energyConsumption: 18.5
+                    batteryCapacity: 75
+                    currentCharge: 0
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "422":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+  /vehicles/{vehicleId}:
+    get:
+      tags:
+      - vehicles
+      summary: Get vehicle by ID
+      description: Get detailed information about a specific vehicle
+      operationId: getVehicleById
+      parameters:
+      - name: vehicleId
+        in: path
+        description: ID of vehicle to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                discriminator:
+                  propertyName: engineType
+                  mapping:
+                    gasoline: "#/components/schemas/GasolineVehicle"
+                    electric: "#/components/schemas/ElectricVehicle"
+                required:
+                - id
+                - brand
+                - model
+                - engineType
+                - totalMileage
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Unique identifier for the vehicle
+                    examples:
+                    - 1
+                  brand:
+                    type: string
+                    description: Vehicle manufacturer
+                    examples:
+                    - Toyota
+                  model:
+                    type: string
+                    description: Vehicle model
+                    examples:
+                    - Camry
+                  engineType:
+                    type: string
+                    enum:
+                    - gasoline
+                    - electric
+                    description: Type of engine
+                  totalMileage:
+                    type: number
+                    format: double
+                    minimum: 0
+                    description: Total distance traveled in kilometers
+                    examples:
+                    - 15000.5
+              examples:
+                gasoline_vehicle:
+                  summary: Gasoline Vehicle Details
+                  value:
+                    id: 1
+                    brand: Toyota
+                    model: Camry
+                    engineType: gasoline
+                    totalMileage: 15000.5
+                    fuelConsumption: 7.5
+                    tankCapacity: 60
+                    currentFuelLevel: 45
+                electric_vehicle:
+                  summary: Electric Vehicle Details
+                  value:
+                    id: 2
+                    brand: Tesla
+                    model: Model 3
+                    engineType: electric
+                    totalMileage: 8500
+                    energyConsumption: 18.5
+                    batteryCapacity: 75
+                    currentCharge: 0
+        "400":
+          description: Invalid vehicle ID supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+    delete:
+      tags:
+      - vehicles
+      summary: Delete vehicle
+      description: Remove a vehicle from the system
+      operationId: deleteVehicle
+      parameters:
+      - name: vehicleId
+        in: path
+        description: ID of vehicle to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        "204":
+          description: Vehicle deleted successfully
+        "400":
+          description: Invalid vehicle ID supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+  /vehicles/{vehicleId}/refuel:
+    put:
+      tags:
+      - gasoline
+      summary: Refuel gasoline vehicle
+      description: Add fuel to a gasoline vehicle's tank
+      operationId: refuelVehicle
+      parameters:
+      - name: vehicleId
+        in: path
+        description: ID of gasoline vehicle to refuel
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      requestBody:
+        description: Refuel data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - liters
+              properties:
+                liters:
+                  type: number
+                  format: double
+                  minimum: 0.1
+                  description: Amount of fuel to add in liters
+                  examples:
+                  - 45.5
+      responses:
+        "200":
+          description: Vehicle refueled successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  discriminator:
+                    propertyName: engineType
+                    mapping:
+                      gasoline: "#/components/schemas/GasolineVehicle"
+                      electric: "#/components/schemas/ElectricVehicle"
+                  required:
+                  - id
+                  - brand
+                  - model
+                  - engineType
+                  - totalMileage
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Unique identifier for the vehicle
+                      examples:
+                      - 1
+                    brand:
+                      type: string
+                      description: Vehicle manufacturer
+                      examples:
+                      - Toyota
+                    model:
+                      type: string
+                      description: Vehicle model
+                      examples:
+                      - Camry
+                    engineType:
+                      type: string
+                      enum:
+                      - gasoline
+                      - electric
+                      description: Type of engine
+                    totalMileage:
+                      type: number
+                      format: double
+                      minimum: 0
+                      description: Total distance traveled in kilometers
+                      examples:
+                      - 15000.5
+                - type: object
+                  required:
+                  - fuelConsumption
+                  - tankCapacity
+                  - currentFuelLevel
+                  properties:
+                    fuelConsumption:
+                      type: number
+                      format: double
+                      minimum: 0.1
+                      description: Fuel consumption rate in liters per 100km
+                      examples:
+                      - 7.5
+                    tankCapacity:
+                      type: number
+                      format: double
+                      minimum: 1
+                      description: Maximum fuel tank capacity in liters
+                      examples:
+                      - 60
+                    currentFuelLevel:
+                      type: number
+                      format: double
+                      minimum: 0
+                      description: Current fuel level in liters
+                      examples:
+                      - 45
+        "400":
+          description: Invalid input or vehicle type
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+  /vehicles/{vehicleId}/charge:
+    put:
+      tags:
+      - electric
+      summary: Charge electric vehicle
+      description: Add charge to an electric vehicle's battery
+      operationId: chargeVehicle
+      parameters:
+      - name: vehicleId
+        in: path
+        description: ID of electric vehicle to charge
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      requestBody:
+        description: Charging data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - kwh
+              properties:
+                kwh:
+                  type: number
+                  format: double
+                  minimum: 0.1
+                  description: Amount of energy to add in kWh
+                  examples:
+                  - 75
+      responses:
+        "200":
+          description: Vehicle charged successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  discriminator:
+                    propertyName: engineType
+                    mapping:
+                      gasoline: "#/components/schemas/GasolineVehicle"
+                      electric: "#/components/schemas/ElectricVehicle"
+                  required:
+                  - id
+                  - brand
+                  - model
+                  - engineType
+                  - totalMileage
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Unique identifier for the vehicle
+                      examples:
+                      - 1
+                    brand:
+                      type: string
+                      description: Vehicle manufacturer
+                      examples:
+                      - Toyota
+                    model:
+                      type: string
+                      description: Vehicle model
+                      examples:
+                      - Camry
+                    engineType:
+                      type: string
+                      enum:
+                      - gasoline
+                      - electric
+                      description: Type of engine
+                    totalMileage:
+                      type: number
+                      format: double
+                      minimum: 0
+                      description: Total distance traveled in kilometers
+                      examples:
+                      - 15000.5
+                - type: object
+                  required:
+                  - energyConsumption
+                  - batteryCapacity
+                  - currentCharge
+                  properties:
+                    energyConsumption:
+                      type: number
+                      format: double
+                      minimum: 0.1
+                      description: Energy consumption rate in kWh per 100km
+                      examples:
+                      - 18.5
+                    batteryCapacity:
+                      type: number
+                      format: double
+                      minimum: 1
+                      description: Maximum battery capacity in kWh
+                      examples:
+                      - 100
+                    currentCharge:
+                      type: number
+                      format: double
+                      minimum: 0
+                      description: Current battery charge in kWh
+                      examples:
+                      - 0
+                      default: 0
+        "400":
+          description: Invalid input or vehicle type
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+  /vehicles/{vehicleId}/mileage:
+    put:
+      tags:
+      - vehicles
+      summary: Add mileage to vehicle
+      description: Record distance traveled for any vehicle type
+      operationId: addMileage
+      parameters:
+      - name: vehicleId
+        in: path
+        description: ID of vehicle to add mileage to
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+      requestBody:
+        description: Mileage data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - kilometers
+              properties:
+                kilometers:
+                  type: number
+                  format: double
+                  minimum: 0.1
+                  description: Distance traveled in kilometers
+                  examples:
+                  - 150.5
+      responses:
+        "200":
+          description: Mileage added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                discriminator:
+                  propertyName: engineType
+                  mapping:
+                    gasoline: "#/components/schemas/GasolineVehicle"
+                    electric: "#/components/schemas/ElectricVehicle"
+                required:
+                - id
+                - brand
+                - model
+                - engineType
+                - totalMileage
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Unique identifier for the vehicle
+                    examples:
+                    - 1
+                  brand:
+                    type: string
+                    description: Vehicle manufacturer
+                    examples:
+                    - Toyota
+                  model:
+                    type: string
+                    description: Vehicle model
+                    examples:
+                    - Camry
+                  engineType:
+                    type: string
+                    enum:
+                    - gasoline
+                    - electric
+                    description: Type of engine
+                  totalMileage:
+                    type: number
+                    format: double
+                    minimum: 0
+                    description: Total distance traveled in kilometers
+                    examples:
+                    - 15000.5
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+        "404":
+          description: Vehicle not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - message
+                properties:
+                  code:
+                    type: string
+                    description: Error code
+                    examples:
+                    - VALIDATION_ERROR
+                  message:
+                    type: string
+                    description: Human-readable error message
+                    examples:
+                    - Invalid input data provided
+                  details:
+                    type: array
+                    description: Additional error details
+                    items:
+                      type: string
+                    examples:
+                    - - Brand is required
+                      - Model must be at least 2 characters
+components:
+  schemas:
+    Vehicle:
+      type: object
+      discriminator:
+        propertyName: engineType
+        mapping:
+          gasoline: "#/components/schemas/GasolineVehicle"
+          electric: "#/components/schemas/ElectricVehicle"
+      required:
+      - id
+      - brand
+      - model
+      - engineType
+      - totalMileage
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the vehicle
+          examples:
+          - 1
+        brand:
+          type: string
+          description: Vehicle manufacturer
+          examples:
+          - Toyota
+        model:
+          type: string
+          description: Vehicle model
+          examples:
+          - Camry
+        engineType:
+          type: string
+          enum:
+          - gasoline
+          - electric
+          description: Type of engine
+        totalMileage:
+          type: number
+          format: double
+          minimum: 0
+          description: Total distance traveled in kilometers
+          examples:
+          - 15000.5
+    GasolineVehicle:
+      allOf:
+      - type: object
+        discriminator:
+          propertyName: engineType
+          mapping:
+            gasoline: "#/components/schemas/GasolineVehicle"
+            electric: "#/components/schemas/ElectricVehicle"
+        required:
+        - id
+        - brand
+        - model
+        - engineType
+        - totalMileage
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Unique identifier for the vehicle
+            examples:
+            - 1
+          brand:
+            type: string
+            description: Vehicle manufacturer
+            examples:
+            - Toyota
+          model:
+            type: string
+            description: Vehicle model
+            examples:
+            - Camry
+          engineType:
+            type: string
+            enum:
+            - gasoline
+            - electric
+            description: Type of engine
+          totalMileage:
+            type: number
+            format: double
+            minimum: 0
+            description: Total distance traveled in kilometers
+            examples:
+            - 15000.5
+      - type: object
+        required:
+        - fuelConsumption
+        - tankCapacity
+        - currentFuelLevel
+        properties:
+          fuelConsumption:
+            type: number
+            format: double
+            minimum: 0.1
+            description: Fuel consumption rate in liters per 100km
+            examples:
+            - 7.5
+          tankCapacity:
+            type: number
+            format: double
+            minimum: 1
+            description: Maximum fuel tank capacity in liters
+            examples:
+            - 60
+          currentFuelLevel:
+            type: number
+            format: double
+            minimum: 0
+            description: Current fuel level in liters
+            examples:
+            - 45
+    ElectricVehicle:
+      allOf:
+      - type: object
+        discriminator:
+          propertyName: engineType
+          mapping:
+            gasoline: "#/components/schemas/GasolineVehicle"
+            electric: "#/components/schemas/ElectricVehicle"
+        required:
+        - id
+        - brand
+        - model
+        - engineType
+        - totalMileage
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Unique identifier for the vehicle
+            examples:
+            - 1
+          brand:
+            type: string
+            description: Vehicle manufacturer
+            examples:
+            - Toyota
+          model:
+            type: string
+            description: Vehicle model
+            examples:
+            - Camry
+          engineType:
+            type: string
+            enum:
+            - gasoline
+            - electric
+            description: Type of engine
+          totalMileage:
+            type: number
+            format: double
+            minimum: 0
+            description: Total distance traveled in kilometers
+            examples:
+            - 15000.5
+      - type: object
+        required:
+        - energyConsumption
+        - batteryCapacity
+        - currentCharge
+        properties:
+          energyConsumption:
+            type: number
+            format: double
+            minimum: 0.1
+            description: Energy consumption rate in kWh per 100km
+            examples:
+            - 18.5
+          batteryCapacity:
+            type: number
+            format: double
+            minimum: 1
+            description: Maximum battery capacity in kWh
+            examples:
+            - 100
+          currentCharge:
+            type: number
+            format: double
+            minimum: 0
+            description: Current battery charge in kWh
+            examples:
+            - 0
+            default: 0
+    VehicleInput:
+      type: object
+      discriminator:
+        propertyName: engineType
+        mapping:
+          gasoline: "#/components/schemas/GasolineVehicleInput"
+          electric: "#/components/schemas/ElectricVehicleInput"
+      required:
+      - brand
+      - model
+      - engineType
+      properties:
+        brand:
+          type: string
+          description: Vehicle manufacturer
+          examples:
+          - Toyota
+        model:
+          type: string
+          description: Vehicle model
+          examples:
+          - Camry
+        engineType:
+          type: string
+          enum:
+          - gasoline
+          - electric
+          description: Type of engine
+        totalMileage:
+          type: number
+          format: double
+          minimum: 0
+          description: Initial total distance traveled in kilometers
+          examples:
+          - 0
+          default: 0
+    GasolineVehicleInput:
+      allOf:
+      - type: object
+        discriminator:
+          propertyName: engineType
+          mapping:
+            gasoline: "#/components/schemas/GasolineVehicleInput"
+            electric: "#/components/schemas/ElectricVehicleInput"
+        required:
+        - brand
+        - model
+        - engineType
+        properties:
+          brand:
+            type: string
+            description: Vehicle manufacturer
+            examples:
+            - Toyota
+          model:
+            type: string
+            description: Vehicle model
+            examples:
+            - Camry
+          engineType:
+            type: string
+            enum:
+            - gasoline
+            - electric
+            description: Type of engine
+          totalMileage:
+            type: number
+            format: double
+            minimum: 0
+            description: Initial total distance traveled in kilometers
+            examples:
+            - 0
+            default: 0
+      - type: object
+        required:
+        - fuelConsumption
+        - tankCapacity
+        properties:
+          fuelConsumption:
+            type: number
+            format: double
+            minimum: 0.1
+            description: Fuel consumption rate in liters per 100km
+            examples:
+            - 7.5
+          tankCapacity:
+            type: number
+            format: double
+            minimum: 1
+            description: Maximum fuel tank capacity in liters
+            examples:
+            - 60
+          currentFuelLevel:
+            type: number
+            format: double
+            minimum: 0
+            description: Initial fuel level in liters
+            examples:
+            - 0
+            default: 0
+    ElectricVehicleInput:
+      allOf:
+      - type: object
+        discriminator:
+          propertyName: engineType
+          mapping:
+            gasoline: "#/components/schemas/GasolineVehicleInput"
+            electric: "#/components/schemas/ElectricVehicleInput"
+        required:
+        - brand
+        - model
+        - engineType
+        properties:
+          brand:
+            type: string
+            description: Vehicle manufacturer
+            examples:
+            - Toyota
+          model:
+            type: string
+            description: Vehicle model
+            examples:
+            - Camry
+          engineType:
+            type: string
+            enum:
+            - gasoline
+            - electric
+            description: Type of engine
+          totalMileage:
+            type: number
+            format: double
+            minimum: 0
+            description: Initial total distance traveled in kilometers
+            examples:
+            - 0
+            default: 0
+      - type: object
+        required:
+        - energyConsumption
+        - batteryCapacity
+        properties:
+          energyConsumption:
+            type: number
+            format: double
+            minimum: 0.1
+            description: Energy consumption rate in kWh per 100km
+            examples:
+            - 18.5
+          batteryCapacity:
+            type: number
+            format: double
+            minimum: 1
+            description: Maximum battery capacity in kWh
+            examples:
+            - 100
+          currentCharge:
+            type: number
+            format: double
+            minimum: 0
+            description: Initial battery charge in kWh
+            examples:
+            - 0
+            default: 0
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          examples:
+          - VALIDATION_ERROR
+        message:
+          type: string
+          description: Human-readable error message
+          examples:
+          - Invalid input data provided
+        details:
+          type: array
+          description: Additional error details
+          items:
+            type: string
+          examples:
+          - - Brand is required
+            - Model must be at least 2 characters
