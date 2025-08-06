@@ -1,12 +1,12 @@
 {
   "name": "brix-green-belt-graduation",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/Adapters/Http/CarHandler.js",
   "scripts": {
     "ci.production": "npm ci --only:production",
     "build": "tsc",
     "start.dev": "npx ts-node src/Adapters/Http/CarHandler.ts",
-    "start": "node dist/Adapters/Http/CarHandler.ts",
+    "start": "node dist/Adapters/Http/CarHandler.js",
     "dev": "tsc --watch",
     "watch": "tsc --watch",
     "test": "jest --watchAll --color --coverage --verbose",
