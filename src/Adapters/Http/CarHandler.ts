@@ -1,13 +1,14 @@
 import express, { Express, Request, Response } from 'express';
 import { Car } from '../../Domain/Car';
 import { AvailableVehicles } from '../../Domain/Primitives/AvailableVehicles';
+import { InMemoryVehicleRepo } from '../Repository/InMemoryVehicleRepo';
 
 const app: Express = express();
 app.use(express.json()); // to parse JSON bodies
 
 const port = 3000;
 
-const cars = new Map<string, Car>();
+const cars = new InMemoryVehicleRepo();
 
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
@@ -15,9 +16,9 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
-app.post('/api/v1/vehicles', (req, res) => {
+app.post('/api/v1/vehicles', async (req, res) => {
   const car = new Car(AvailableVehicles.Toyota.Camry);
-  cars.set(car.id(), car);
+  await cars.save(car);
   res.status(200).json({
     message: 'Vehicle data received successfully',
     vehicle: car.data(),
@@ -25,11 +26,10 @@ app.post('/api/v1/vehicles', (req, res) => {
   });
 });
 
-app.get('/api/v1/vehicles', (req, res) => {
+app.get('/api/v1/vehicles', async (req, res) => {
   res.status(200).json({
     message: 'Vehicle data retrieved successfully',
-    vehicles:
-      cars.size > 0 ? Array.from(cars.values()).map((car) => car.data()) : [],
+    vehicles: await cars.findAll(),
     data: req.body,
   });
 });
