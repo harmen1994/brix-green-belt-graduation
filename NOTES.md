@@ -12,5 +12,9 @@
 
 ## 🍅 Pomodoro 3
 
- - [ ] Inject express to current set-up
- - [ ] Set-up hexagonal architecture
+ - [x] Inject express to current set-up
+ - [x] Set-up hexagonal architecture
+
+## 🍅 Pomodoro 4
+
+ - [x] repair entrance into application 
