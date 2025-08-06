@@ -5,8 +5,8 @@
   "scripts": {
     "ci.production": "npm ci --only:production",
     "build": "tsc",
-    "start.dev": "npx ts-node src/index.ts",
-    "start": "node dist/index.js",
+    "start.dev": "npx ts-node src/Adapters/Http/CarHandler.ts",
+    "start": "node dist/Adapters/Http/CarHandler.ts",
     "dev": "tsc --watch",
     "watch": "tsc --watch",
     "test": "jest --watchAll --color --coverage --verbose",
