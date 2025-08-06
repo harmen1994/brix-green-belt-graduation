@@ -14,7 +14,7 @@ RUN npm install -g npm@11.5.1
 RUN npm run ci.production
 
 # Copy TypeScript source code
-COPY src dist tsconfig.json ./
+COPY src tsconfig.json ./
 
 # Install TypeScript globally and compile
 RUN npm install -g typescript
