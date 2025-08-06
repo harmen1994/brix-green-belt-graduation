@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import { Car } from '../../Domain/Car';
 import { AvailableVehicles } from '../../Domain/Primitives/AvailableVehicles';
 import { InMemoryVehicleRepo } from '../Repository/InMemoryVehicleRepo';
+import { Vehicle } from './generated/rest-models';
 
 const app: Express = express();
 app.use(express.json()); // to parse JSON bodies
@@ -27,9 +28,23 @@ app.post('/api/v1/vehicles', async (req, res) => {
 });
 
 app.get('/api/v1/vehicles', async (req, res) => {
+  const fetchedCars = await cars.findAll();
+  const mappedCars = fetchedCars.map((car) => {
+    console.log('Mapping car:', car);
+    return Vehicle.parse({
+      id: 1,
+      brand: car.modelInfo.brand,
+      model: car.modelInfo.model,
+      engineType: 'gasoline',
+      totalMileage: car.mileage(),
+      fuelConsumption: car.modelInfo.fuelConsumption,
+      tankCapacity: car.modelInfo.tankCapacity,
+      curentFuelType: car.fuelAmount(),
+    });
+  });
   res.status(200).json({
     message: 'Vehicle data retrieved successfully',
-    vehicles: await cars.findAll(),
+    vehicles: mappedCars,
     data: req.body,
   });
 });

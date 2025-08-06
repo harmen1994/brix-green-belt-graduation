@@ -5,6 +5,7 @@
   "scripts": {
     "ci.production": "npm ci --only:production",
     "build": "tsc",
+    "generate-openapi-models": "typed-openapi api/contract/openapi.yaml -o src/Adapters/Http/generated/rest-models.ts -r zod && eslint src/Adapters/Http/generated/rest-models.ts --fix",
     "start.dev": "npx ts-node src/Adapters/Http/CarHandler.ts",
     "start": "node src/Adapters/Http/CarHandler.js",
     "dev": "tsc --watch",
@@ -46,10 +47,12 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
+    "typed-openapi": "^1.5.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "zod": "^4.0.15"
   }
 }
