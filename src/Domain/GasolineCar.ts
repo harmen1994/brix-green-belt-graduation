@@ -2,7 +2,7 @@ import { randomUUID, UUID } from 'node:crypto';
 import { CarModel } from './CarModel';
 import { ICarEntity } from './ICarEntity';
 
-export class Car implements ICarEntity {
+export class GasolineCar implements ICarEntity {
   private readonly _id: UUID = randomUUID();
   private readonly brand: string;
   private readonly model: string;

@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from 'express';
-import { Car } from '../../Domain/Car';
+import { GasolineCar } from '../../Domain/GasolineCar';
 import { AvailableVehicles } from '../../Domain/Primitives/AvailableVehicles';
 import { InMemoryVehicleRepo } from '../Repository/InMemoryVehicleRepo';
 import { Vehicle } from './generated/rest-models';
@@ -18,7 +18,7 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.post('/api/v1/vehicles', async (req, res) => {
-  const car = new Car(AvailableVehicles.Toyota.Camry);
+  const car = new GasolineCar(AvailableVehicles.Toyota.Camry);
   await cars.save(car);
   res.status(200).json({
     message: 'Vehicle data received successfully',
