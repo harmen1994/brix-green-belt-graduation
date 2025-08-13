@@ -31,5 +31,5 @@ jobs:
     - run: npm run build-image
     - run: npm run run-image
     - run: docker ps
-    - run: sleep 5 # wait for the container to be ready
+    - run: sleep 10 # wait for the container to be ready
     - run: npm run smoketest
