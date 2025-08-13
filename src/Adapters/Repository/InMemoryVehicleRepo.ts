@@ -9,8 +9,11 @@ export class InMemoryVehicleRepo implements IVehicleClient {
   private readonly cars = new Map<number, GasolineCar>();
   private nextId = 1;
 
-  public async save(carModel: CarModel): Promise<GasolineCar> {
-    const car = new GasolineCar(this.nextId++, carModel);
+  public async save(
+    carModel: CarModel,
+    totalMileage: number
+  ): Promise<GasolineCar> {
+    const car = new GasolineCar(this.nextId++, carModel, totalMileage);
     this.cars.set(car.id(), car);
     return car;
   }

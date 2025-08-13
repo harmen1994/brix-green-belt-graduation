@@ -2,7 +2,7 @@ import { GasolineCar } from '../../../Domain/GasolineCar';
 import { CarModel } from '../../../Domain/CarModel';
 
 export interface IVehicleClient {
-  save(carModel: CarModel): Promise<GasolineCar>;
+  save(carModel: CarModel, totalMileage: number): Promise<GasolineCar>;
 
   findAll(): Promise<GasolineCar[]>;
 

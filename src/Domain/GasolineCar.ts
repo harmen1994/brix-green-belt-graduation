@@ -10,12 +10,10 @@ export class GasolineCar implements ICarEntity {
   private totalMileage: number;
   private fuelAvailable: number;
 
-  DEFAULT_INITIAL_MILEAGE = 0;
-
   constructor(
     id: number,
     public modelInfo: CarModel,
-    totalMileage?: number
+    totalMileage: number
   ) {
     this._id = id;
     this.brand = modelInfo.brand;
@@ -23,7 +21,7 @@ export class GasolineCar implements ICarEntity {
     this.fuelConsumption = modelInfo.fuelConsumption;
     this.tankCapacity = modelInfo.tankCapacity;
     this.fuelAvailable = 0;
-    this.totalMileage = totalMileage ?? this.DEFAULT_INITIAL_MILEAGE;
+    this.totalMileage = totalMileage;
   }
 
   public refillGasoline(liters: number): void {

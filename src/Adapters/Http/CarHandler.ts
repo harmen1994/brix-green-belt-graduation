@@ -17,7 +17,8 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.post('/api/v1/vehicles', async (req, res) => {
-  const car = await cars.save(AvailableVehicles.Toyota.Camry);
+  const { totalMileage = 0 } = req.body;
+  const car = await cars.save(AvailableVehicles.Toyota.Camry, totalMileage);
   res.status(200).json({
     message: 'Vehicle data received successfully',
     vehicle: car.data(),
