@@ -5,6 +5,7 @@
   "scripts": {
     "ci.production": "npm ci --only:production",
     "build": "tsc",
+    "bruno": "cd api/CarTripKataCollection && npx @usebruno/cli run health.bru",
     "generate-openapi-models": "typed-openapi api/contract/openapi.yaml -o src/Adapters/Http/generated/rest-models.ts -r zod && eslint src/Adapters/Http/generated/rest-models.ts --fix",
     "start.dev": "npx ts-node src/Adapters/Http/CarHandler.ts",
     "start": "node dist/Adapters/Http/CarHandler.js",
@@ -15,7 +16,7 @@
     "lint": "eslint . --ext .ts --ignore-pattern 'dist/**' --max-warnings 0",
     "build-image": "docker build -t brix-green-belt-graduation . --progress=plain",
     "run-image": "docker run -d -p 3000:3000 brix-green-belt-graduation",
-    "smoketest": "curl http://127.0.0.1:3000/health"
+    "smoketest": "npm run bruno"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
