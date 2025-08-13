@@ -7,12 +7,15 @@ export class GasolineCar implements ICarEntity {
   private readonly model: string;
   private readonly fuelConsumption: number; // unit is l/100 km
   private readonly tankCapacity: number;
-  private totalMileage: number = 0;
+  private totalMileage: number;
   private fuelAvailable: number;
+
+  DEFAULT_INITIAL_MILEAGE = 0;
 
   constructor(
     id: number,
-    public modelInfo: CarModel
+    public modelInfo: CarModel,
+    totalMileage?: number
   ) {
     this._id = id;
     this.brand = modelInfo.brand;
@@ -20,6 +23,7 @@ export class GasolineCar implements ICarEntity {
     this.fuelConsumption = modelInfo.fuelConsumption;
     this.tankCapacity = modelInfo.tankCapacity;
     this.fuelAvailable = 0;
+    this.totalMileage = totalMileage ?? this.DEFAULT_INITIAL_MILEAGE;
   }
 
   public refillGasoline(liters: number): void {
