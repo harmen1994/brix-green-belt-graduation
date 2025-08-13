@@ -1,7 +1,5 @@
-import { UUID } from 'node:crypto';
-
 export interface ICarEntity {
-  id(): UUID;
+  id(): number;
   name(): string;
   data(): string;
   refillGasoline(liters: number): void;

@@ -1,1 +1,1 @@
-export type Brand = 'Toyota' | 'Ford' | 'Renault' | 'Jaguar';
+export type Brand = 'Toyota' | 'Ford' | 'Renault' | 'Jaguar' | 'Tesla';

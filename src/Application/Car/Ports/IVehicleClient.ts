@@ -1,11 +1,12 @@
 import { GasolineCar } from '../../../Domain/GasolineCar';
+import { CarModel } from '../../../Domain/CarModel';
 
 export interface IVehicleClient {
-  save(vehicle: GasolineCar): Promise<GasolineCar>;
+  save(carModel: CarModel): Promise<GasolineCar>;
 
   findAll(): Promise<GasolineCar[]>;
 
-  findById(id: string): Promise<GasolineCar | undefined>;
+  findById(id: number): Promise<GasolineCar | undefined>;
 
-  delete(id: string): Promise<void>;
+  delete(id: number): Promise<void>;
 }

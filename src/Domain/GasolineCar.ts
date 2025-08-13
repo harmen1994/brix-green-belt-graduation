@@ -1,9 +1,8 @@
-import { randomUUID, UUID } from 'node:crypto';
 import { CarModel } from './CarModel';
 import { ICarEntity } from './ICarEntity';
 
 export class GasolineCar implements ICarEntity {
-  private readonly _id: UUID = randomUUID();
+  private readonly _id: number;
   private readonly brand: string;
   private readonly model: string;
   private readonly fuelConsumption: number; // unit is l/100 km
@@ -11,7 +10,11 @@ export class GasolineCar implements ICarEntity {
   private totalMileage: number = 0;
   private fuelAvailable: number;
 
-  constructor(public modelInfo: CarModel) {
+  constructor(
+    id: number,
+    public modelInfo: CarModel
+  ) {
+    this._id = id;
     this.brand = modelInfo.brand;
     this.model = modelInfo.model;
     this.fuelConsumption = modelInfo.fuelConsumption;
@@ -32,7 +35,7 @@ export class GasolineCar implements ICarEntity {
     this.totalMileage += distance;
   }
 
-  public id(): UUID {
+  public id(): number {
     return this._id;
   }
 
