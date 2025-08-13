@@ -1,13 +1,13 @@
 {
   "name": "brix-green-belt-graduation",
   "version": "1.0.0",
-  "main": "src/Adapters/Http/CarHandler.js",
+  "main": "dist/Adapters/Http/CarHandler.js",
   "scripts": {
     "ci.production": "npm ci --only:production",
     "build": "tsc",
     "generate-openapi-models": "typed-openapi api/contract/openapi.yaml -o src/Adapters/Http/generated/rest-models.ts -r zod && eslint src/Adapters/Http/generated/rest-models.ts --fix",
     "start.dev": "npx ts-node src/Adapters/Http/CarHandler.ts",
-    "start": "node src/Adapters/Http/CarHandler.js",
+    "start": "node dist/Adapters/Http/CarHandler.js",
     "dev": "tsc --watch",
     "watch": "tsc --watch",
     "test": "jest --watchAll --color --coverage --verbose",
