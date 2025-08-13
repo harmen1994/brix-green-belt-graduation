@@ -1,4 +1,7 @@
-export const AvailableVehicles = {
+import { CarModel } from '../CarModel';
+import { Brand } from '../Brand';
+
+export const AvailableVehicles: Record<Brand, Record<string, CarModel>> = {
   Toyota: {
     Corolla: {
       brand: 'Toyota',
@@ -21,4 +24,7 @@ export const AvailableVehicles = {
       tankCapacity: 50,
     },
   },
+  Renault: {},
+  Jaguar: {},
+  Tesla: {},
 } as const;

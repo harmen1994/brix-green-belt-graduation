@@ -17,8 +17,14 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.post('/api/v1/vehicles', async (req, res) => {
-  const { totalMileage = 0 } = req.body;
-  const car = await cars.save(AvailableVehicles.Toyota.Camry, totalMileage);
+  const { brand, model, totalMileage = 0 } = req.body;
+
+  const vehicleModel = validateVehicleModel(brand, model);
+  if (!vehicleModel) {
+    return res.status(400).json({ message: 'Invalid brand or model' });
+  }
+
+  const car = await cars.save(vehicleModel, totalMileage);
   res.status(200).json({
     message: 'Vehicle data received successfully',
     vehicle: car.data(),
@@ -47,6 +53,14 @@ app.get('/api/v1/vehicles', async (req, res) => {
     data: req.body,
   });
 });
+
+function validateVehicleModel(brand: string, model: string) {
+  const models = AvailableVehicles[brand as keyof typeof AvailableVehicles];
+  if (!models) return null;
+  const vehicleModel = models[model];
+  if (!vehicleModel) return null;
+  return vehicleModel;
+}
 
 export const server = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
