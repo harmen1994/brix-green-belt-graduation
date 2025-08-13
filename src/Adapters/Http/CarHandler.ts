@@ -17,7 +17,12 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.post('/api/v1/vehicles', async (req, res) => {
-  const { brand, model, totalMileage = 0 } = req.body;
+  const { brand, model, engineType, totalMileage = 0 } = req.body;
+
+  const validEngineTypes = ['gasoline', 'electric'];
+  if (!validEngineTypes.includes(engineType)) {
+    return res.status(400).json({ message: 'Invalid engine type' });
+  }
 
   const vehicleModel = validateVehicleModel(brand, model);
   if (!vehicleModel) {
